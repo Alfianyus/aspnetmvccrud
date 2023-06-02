@@ -2,6 +2,7 @@
 using aspnetmvccrud.Models;
 using aspnetmvccrud.Models.Domain;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace aspnetmvccrud.Controllers
 {
@@ -12,6 +13,15 @@ namespace aspnetmvccrud.Controllers
         public EmployeesController(MVCDemoDbContext mvcDemoDbContext)
         {
             this.mvcDemoDbContext = mvcDemoDbContext;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> index()
+        {
+            var employees = await mvcDemoDbContext.Employees.ToListAsync();
+            return View(employees);
+
+
         }
 
         [HttpGet]
@@ -35,7 +45,71 @@ namespace aspnetmvccrud.Controllers
 
             await mvcDemoDbContext.Employees.AddAsync(employee);
             await mvcDemoDbContext.SaveChangesAsync();
-            return RedirectToAction("Add");
+            return RedirectToAction("Index");
         }
+
+
+        [HttpGet]
+        public  async Task<IActionResult> View(Guid id) 
+        {
+            var employee= await mvcDemoDbContext.Employees.FirstOrDefaultAsync(x => x.Id == id);
+
+            if(employee != null)
+            {
+                var viewModel = new UpdateEmployeeViewModel()
+                {
+                    Id = employee.Id,
+                    Name = employee.Name,
+                    Email = employee.Email,
+                    Salary = employee.Salary,
+                    Department = employee.Department,
+                    DateOfBirth = employee.DateOfBirth,
+
+                };
+
+                return await Task.Run(()=>View("View", viewModel));
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> View(UpdateEmployeeViewModel model)
+        {
+            var employee = await mvcDemoDbContext.Employees.FindAsync(model.Id);
+
+            if(employee != null)
+            {
+                employee.Name = model.Name;
+                employee.Email = model.Email;
+                employee.Salary = model.Salary;
+                employee.DateOfBirth = model.DateOfBirth;
+                employee.Department = model.Department;
+
+                 await mvcDemoDbContext.SaveChangesAsync();
+
+                return RedirectToAction("Index");
+
+
+
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult>Delete(UpdateEmployeeViewModel model)
+        {
+            var employee = await mvcDemoDbContext.Employees.FindAsync(model.Id);
+
+            if(employee != null) 
+            {
+                mvcDemoDbContext.Employees.Remove(employee);
+                await mvcDemoDbContext.SaveChangesAsync();
+
+                return RedirectToAction("Index");
+            }
+
+            return RedirectToAction("Index");
+        }
+
     }
 }
