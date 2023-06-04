@@ -28,5 +28,17 @@
         <input type="text" class="form-control" asp-for="Department">
     </div>
     
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary" onclick="displayAlertSuccess()">Submit</button>
 </form>
+
+@section Scripts{
+    <script>
+        function displayAlert() {
+            Swal.fire("Example With SweetAlert2");
+        }
+
+        function displayAlertSuccess() {
+            Swal.fire('Add Employee Successfully', 'Good job', 'success');
+        }
+    </script>
+}
