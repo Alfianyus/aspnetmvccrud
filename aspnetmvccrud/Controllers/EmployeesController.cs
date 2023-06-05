@@ -88,9 +88,6 @@ namespace aspnetmvccrud.Controllers
                  await mvcDemoDbContext.SaveChangesAsync();
 
                 return RedirectToAction("Index");
-
-
-
             }
             return RedirectToAction("Index");
         }
