@@ -20,7 +20,7 @@ namespace aspnetmvccrud.Controllers
         {
             var employees = await mvcDemoDbContext.Employees.ToListAsync();
 
-            const int pageSize = 10;
+            const int pageSize = 5;
             if(pg<1)
                 pg= 1;
 
