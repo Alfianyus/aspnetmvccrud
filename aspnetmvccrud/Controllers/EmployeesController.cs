@@ -16,10 +16,29 @@ namespace aspnetmvccrud.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> index()
+        public async Task<IActionResult> index(int pg=1)
         {
             var employees = await mvcDemoDbContext.Employees.ToListAsync();
-            return View(employees);
+
+            const int pageSize = 10;
+            if(pg<1)
+                pg= 1;
+
+            int recsCount = employees.Count();
+
+            var pager = new Pager(recsCount, pg, pageSize);
+
+            int recSkip=(pg-1) * pageSize;
+
+            var data=employees.Skip(recSkip).Take(pager.PageSize).ToList();
+
+            this.ViewBag.Pager = pager;
+
+
+            //return View(employees);
+
+
+            return View(data);
 
 
         }
